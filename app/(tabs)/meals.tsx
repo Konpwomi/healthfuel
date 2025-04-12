@@ -3,7 +3,7 @@ import React from 'react'
 
 const meals = () => {
   return (
-    <View>
+    <View className='bg-white h-full'>
       <Text>meals</Text>
     </View>
   )

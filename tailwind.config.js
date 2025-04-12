@@ -5,6 +5,7 @@ export const theme = {
   extend: {
     colors: {
       primary: '#1EAFB3'
+      // primary: '#3399ff'
     }
   },
 };
