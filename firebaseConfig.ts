@@ -3,7 +3,7 @@ import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCs1KyJdiyk1viFeuEH-0xJ29aQYNq_6fY",
+  apiKey: "AIzaSyDpodXk5kFJaiWRV6szoqko-I5MkVLIrDE",
   authDomain: "health-fuel.firebaseapp.com",
   projectId: "health-fuel",
   storageBucket: "health-fuel.firebasestorage.app",
