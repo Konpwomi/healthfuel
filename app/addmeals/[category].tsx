@@ -81,97 +81,97 @@ export default function AddMeals() {
   };
 
   return (
-    <Pressable onPress={Keyboard.dismiss}>
-      <LinearGradient
-        className="flex-1"
-        colors={["#b6fdff", "#e1f7f7"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-      >
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1, padding: 20 }}
-          keyboardShouldPersistTaps="handled"
-        >
-          <View className="flex-1">
-            <Text className="text-3xl ml-10 mr-10 mt-20 mb-5 font-semibold self-center">
-              {category?.toString().charAt(0).toUpperCase() +
-                category?.toString().slice(1).toLowerCase()}
-            </Text>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+    >
+      <Pressable className="flex-1" onPress={Keyboard.dismiss}>
+        <View className="bg-secondary flex-1">
+          <ScrollView
+            contentContainerStyle={{ flexGrow: 1, padding: 20 }}
+            keyboardShouldPersistTaps="handled"
+          >
+            <View className="flex-1">
+              <Text className="text-3xl ml-10 mr-10 mt-20 mb-5 font-semibold self-center">
+                {category?.toString().charAt(0).toUpperCase() +
+                  category?.toString().slice(1).toLowerCase()}
+              </Text>
 
-            <View className="m-10">
-              {/* Meal Name Input */}
-              <Text className="text-xl font-semibold">Meals</Text>
-              <TextInput
-                className="text-xl font-semibold rounded-lg bg-gray-50 p-4 mt-5"
-                keyboardType="default"
-                value={mealName}
-                onChangeText={setMealName}
-              />
-
-              {/* Kcal Input */}
-              <Text className="font-semibold text-xl mt-10">Kcal</Text>
-              <View className="flex-row">
+              <View className="m-10">
+                {/* Meal Name Input */}
+                <Text className="text-xl font-semibold">Meals</Text>
                 <TextInput
-                  className="font-semibold text-xl rounded-lg bg-gray-50 mt-5 w-32 p-4"
-                  keyboardType="numeric"
-                  value={mealCalories?.toString() || ""}
-                  onChangeText={(text) => {
-                    const mealCaloriesNum = parseInt(text);
-                    if (isNaN(mealCaloriesNum)) {
-                      setError("Please enter a valid number for calories.");
-                      setMealCalories(null);
-                    } else {
-                      setMealCalories(mealCaloriesNum);
-                      setError("");
-                    }
-                  }}
+                  className="text-xl font-semibold rounded-lg bg-gray-50 p-4 mt-5"
+                  keyboardType="default"
+                  value={mealName}
+                  onChangeText={setMealName}
                 />
-                <Text className="font-semibold text-xl text-primary self-center mt-5 ml-3">
-                  Kcal
-                </Text>
-              </View>
 
-              {/* Error Text */}
-              {error ? (
-                <Text className="text-red-500 mt-10 font-semibold">
-                  {error}
-                </Text>
-              ) : null}
-
-              {/* Buttons */}
-              <View className="flex-row justify-between mt-10">
-                <TouchableOpacity
-                  className="bg-white rounded-xl w-40 p-4 items-center justify-center"
-                  onPress={() => {
-                    setMealName("");
-                    setMealCalories(null);
-                    setError("");
-                  }}
-                >
-                  <Text className="text-primary text-center text-xl font-semibold">
-                    Clear
+                {/* Kcal Input */}
+                <Text className="font-semibold text-xl mt-10">Kcal</Text>
+                <View className="flex-row">
+                  <TextInput
+                    className="font-semibold text-xl rounded-lg bg-gray-50 mt-5 w-32 p-4"
+                    keyboardType="numeric"
+                    value={mealCalories?.toString() || ""}
+                    onChangeText={(text) => {
+                      const mealCaloriesNum = parseInt(text);
+                      if (isNaN(mealCaloriesNum)) {
+                        setError("Please enter a valid number for calories.");
+                        setMealCalories(null);
+                      } else {
+                        setMealCalories(mealCaloriesNum);
+                        setError("");
+                      }
+                    }}
+                  />
+                  <Text className="font-semibold text-xl text-primary self-center mt-5 ml-3">
+                    Kcal
                   </Text>
-                </TouchableOpacity>
+                </View>
 
-                <TouchableOpacity
-                  disabled={isLoading}
-                  className="bg-primary rounded-xl w-40 p-4 items-center justify-center"
-                  onPress={handleAddMeal}
-                >
-                  {isLoading ? (
-                    <ActivityIndicator size="large" color="#fff" />
-                  ) : (
-                    <Text className="text-white text-center text-xl font-semibold">
-                      Add Meal
+                {/* Error Text */}
+                {error ? (
+                  <Text className="text-red-500 mt-10 font-semibold">
+                    {error}
+                  </Text>
+                ) : null}
+
+                {/* Buttons */}
+                <View className="flex-row justify-between mt-10">
+                  <TouchableOpacity
+                    className="bg-white rounded-xl w-40 p-4 items-center justify-center"
+                    onPress={() => {
+                      setMealName("");
+                      setMealCalories(null);
+                      setError("");
+                    }}
+                  >
+                    <Text className="text-primary text-center text-xl font-semibold">
+                      Clear
                     </Text>
-                  )}
-                </TouchableOpacity>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    disabled={isLoading}
+                    className="bg-primary rounded-xl w-40 p-4 items-center justify-center"
+                    onPress={handleAddMeal}
+                  >
+                    {isLoading ? (
+                      <ActivityIndicator size="large" color="#fff" />
+                    ) : (
+                      <Text className="text-white text-center text-xl font-semibold">
+                        Add Meal
+                      </Text>
+                    )}
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
-          </View>
-        </ScrollView>
-      </LinearGradient>
-    </Pressable>
+          </ScrollView>
+        </View>
+      </Pressable>
+    </KeyboardAvoidingView>
   );
 }
 
