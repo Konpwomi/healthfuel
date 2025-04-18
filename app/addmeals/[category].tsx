@@ -81,11 +81,6 @@ export default function AddMeals() {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flex: 1 }}
-    >
-      <Pressable className="flex-1" onPress={Keyboard.dismiss}>
         <View className="bg-secondary flex-1">
           <ScrollView
             contentContainerStyle={{ flexGrow: 1, padding: 20 }}
@@ -170,8 +165,6 @@ export default function AddMeals() {
             </View>
           </ScrollView>
         </View>
-      </Pressable>
-    </KeyboardAvoidingView>
   );
 }
 
