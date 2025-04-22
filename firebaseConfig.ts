@@ -19,7 +19,4 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
-
-// Use standard auth without explicit persistence
-// AsyncStorage will still be used by default in React Native
 export const auth = getAuth(app);

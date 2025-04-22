@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Modal, Alert, ActivityIndicator } from "react-native";
+import { View, Text, TouchableOpacity, Modal, Alert, TextInput, ActivityIndicator } from "react-native";
 import { Pencil } from "lucide-react-native";
-import { db,auth } from "@/firebaseConfig";
-import { doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { useRouter } from "expo-router";
+import { db, auth } from "@/firebaseConfig";
+import { doc, updateDoc, deleteDoc } from "firebase/firestore";
 
 interface MealItem {
   id: string;
@@ -26,16 +26,14 @@ export default function MealsLog({
   mealItem,
   onRefresh,
 }: MealsLogProps) {
+  const router = useRouter();
+  const user = auth.currentUser;
   const [modalVisible, setModalVisible] = useState(false);
   const [currentSelectedMeal, setCurrentSelectedMeal] = useState<MealItem | null>(null);
   const [newMealName, setNewMealName] = useState<string>("");
   const [newCalories, setNewCalories] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-
-  const user = auth.currentUser;
-
-  const router = useRouter();
 
   const openModal = (meal: MealItem) => {
     setCurrentSelectedMeal(meal);
@@ -49,30 +47,32 @@ export default function MealsLog({
     setCurrentSelectedMeal(null);
     setNewMealName("");
     setNewCalories(null);
+    setError(null);
   };
 
   // Handle save (update) meal
   const handleModalSaveMeal = async () => {
     setError('');
     if (!newMealName) {
-        setError("Meal name cannot be empty.");
-        return;
+      setError("Meal name cannot be empty.");
+      return;
     }
   
     if (newCalories === null || newCalories <= 0) {
-      Alert.alert("Invalid Input", "Calories must be a positive number.");
+      setError("Calories must be a positive number.");
       return;
     }
     setIsLoading(true);
+    
     if (!user) {
-        setError("User is not logged in.");
-        setIsLoading(false);
-        return;
+      setError("User is not logged in.");
+      setIsLoading(false);
+      return;
     }
 
     if (currentSelectedMeal) {
       try {
-        const mealRef = doc(db, "users", user.uid, "meals", currentSelectedMeal.id); // Replace with dynamic userId
+        const mealRef = doc(db, "users", user.uid, "meals", currentSelectedMeal.id);
         await updateDoc(mealRef, {
           name: newMealName.trim(),
           calories: newCalories,
@@ -81,7 +81,7 @@ export default function MealsLog({
         onRefresh?.();
       } catch (error) {
         console.error("Error updating meal:", error);
-        setError("Could Not Update Meal");
+        setError("Could not update meal.");
       } finally {
         setIsLoading(false);
       }
@@ -92,10 +92,10 @@ export default function MealsLog({
   const handleDelete = async () => {
     if (!user) {
       setError("User is not logged in.");
-      setIsLoading(false);
       return;
     }
     if (currentSelectedMeal) {
+      setIsLoading(true);
       try {
         const mealRef = doc(db, "users", user.uid, "meals", currentSelectedMeal.id);
         await deleteDoc(mealRef);
@@ -103,52 +103,71 @@ export default function MealsLog({
         onRefresh?.();
       } catch (error) {
         console.error("Error deleting meal:", error);
+        setError("Could not delete meal.");
+      } finally {
+        setIsLoading(false);
       }
     }
   };
 
-  return ( //Meals Log Boxes
-    <View className="bg-white rounded-2xl p-5 ml-10 mr-10 mt-7">
-      <View className="flex-row justify-between">
-        <Text className="text-xl font-semibold text-primary">{logTitle}</Text>
-        <Text className="text-xl font-semibold text-primary">{totalKcal} Kcal</Text>
+  return (
+    <View className="bg-white rounded-3xl shadow-sm p-6 mb-5 mx-4">
+      {/* Header with meal type and total calories */}
+      <View className="flex-row justify-between items-center mb-4">
+        <View className="flex-row items-center">
+          <View className="w-1.5 h-8 bg-primary rounded-full mr-2" />
+          <Text className="text-xl font-bold text-gray-800 ml-1">{logTitle}</Text>
+        </View>
       </View>
 
-      {/*Horizon Line*/}
-      <View className="h-0.5 bg-primary mt-3"></View>
+      {/* Divider */}
+      <View className="h-0.5 bg-gray-100 mb-4" />
 
-      {mealItem.map((item) => (
-        <View key={item.id}>
-          <View className="flex-row justify-between m-1">
-            <Text className="text-xl font-semibold">{item.name}</Text>
-            <View className="flex-row items-center space-x-2">
-              <Text className="text-xl font-semibold">{item.calories} Kcal</Text>
+      {/* Meal Items List */}
+      {mealItem.length > 0 ? (
+        <View className="space-y-3">
+          {mealItem.map((item) => (
+            <View key={item.id} className="mb-1">
+              <View className="flex-row justify-between items-center py-2">
+                <Text className="text-lg font-medium text-gray-800 flex-1 ml-1">
+                  {item.name}
+                </Text>
+                <View className="flex-row items-center">
+                  <Text className="text-base text-gray-600 mr-3">
+                    {item.calories} kcal
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => openModal(item)}
+                    className="p-2"
+                  >
+                    <Pencil color="#1EAFB3" size={18} />
+                  </TouchableOpacity>
+                </View>
+              </View>
               
-              {/*Pencil to Popup Modal --> Edit / Delete Meal*/}
-              <TouchableOpacity
-                onPress={() => openModal(item)} // Open modal for Editing or Deleting
-                className="p-2"
-              >
-                <Pencil color="#1EAFB3" size={15} />
-              </TouchableOpacity>
+              {/* Subtle divider between items */}
+              {mealItem.indexOf(item) !== mealItem.length - 1 && (
+                <View className="h-0.5 bg-gray-50 mt-2" />
+              )}
             </View>
-          </View>
-
-          {/* Divider Line below each meal */}   
-          <View className="h-0.5 bg-gray-300 my-3" />
+          ))}
         </View>
-      ))}
+      ) : (
+        <View className="py-6 items-center">
+          <Text className="text-gray-400 text-center">No meals added yet</Text>
+        </View>
+      )}
 
-      {/* Add More Meal Button & Route to AddMeals Screen*/}
+      {/* Add Meal Button */}
       <TouchableOpacity
         onPress={() => {
           const category = logTitle.toLowerCase();
           router.push(`/addmeals/${category}`);
         }}
-        className="bg-primary p-2 rounded-xl w-full mt-5"
+        className="bg-primary mt-6 p-3.5 rounded-xl w-full"
       >
-        <Text className="text-white text-center text-xl font-semibold">
-          Add More Meal
+        <Text className="text-white text-center font-semibold text-lg">
+          Add {logTitle}
         </Text>
       </TouchableOpacity>
 
@@ -160,82 +179,103 @@ export default function MealsLog({
         onRequestClose={closeModal}
       >
         <View className="flex-1 justify-center items-center bg-gray-700 bg-opacity-50">
-          <View className="bg-white p-6 rounded-xl w-4/5">
-            <Text className="text-2xl font-semibold mb-4">Edit Meal</Text>
+          <View className="bg-white p-6 rounded-2xl w-4/5 shadow-xl">
+            <Text className="text-2xl font-semibold mb-6 text-gray-800">Edit Meal</Text>
 
-            <TextInput
-              value={newMealName}
-              onChangeText={setNewMealName}
-              placeholder="Meal Name"
-              className="border-b-2 border-gray-400 mb-4 p-2 text-xl"
-            />
-            <TextInput
-              value={newCalories?.toString() || ''}
-              onChangeText={(text) => {
-                const newCaloriesNum = parseInt(text);
-                if(isNaN(newCaloriesNum)){
-                    setError("Please enter a valid number for calories.");
-                    setNewCalories(null)
-                }else{
-                    setNewCalories(newCaloriesNum);
-                    setError('');
-                }
-              }}
-              keyboardType="numeric"
-              placeholder="Calories"
-              className="border-b-2 border-gray-400 mb-4 p-2 text-xl"
-            />
+            <View className="mb-5">
+              <Text className="text-base font-medium mb-2 text-gray-700 ml-1">
+                Meal Name
+              </Text>
+              <TextInput
+                value={newMealName}
+                onChangeText={setNewMealName}
+                placeholder="Meal Name"
+                className="border-b border-gray-200 mb-1 p-2 text-lg text-gray-800"
+              />
+            </View>
+
+            <View className="mb-5">
+              <Text className="text-base font-medium mb-2 text-gray-700 ml-1">
+                Calories
+              </Text>
+              <View className="flex-row items-center border-b border-gray-200 mb-1 pb-1">
+                <TextInput
+                  value={newCalories?.toString() || ''}
+                  onChangeText={(text) => {
+                    const newCaloriesNum = parseInt(text);
+                    if (text === "") {
+                      setNewCalories(null);
+                      setError("");
+                    } else if (isNaN(newCaloriesNum)) {
+                      setError("Please enter a valid number for calories.");
+                      setNewCalories(null);
+                    } else {
+                      setNewCalories(newCaloriesNum);
+                      setError("");
+                    }
+                  }}
+                  keyboardType="numeric"
+                  placeholder="0"
+                  className="p-2 text-lg text-gray-800 flex-1"
+                />
+                <Text className="text-primary font-semibold text-lg mr-2">
+                  Kcal
+                </Text>
+              </View>
+            </View>
 
             {/* Error Text */}
             {error ? (
-              <Text className="text-red-500 mt-10 font-semibold">{error}</Text>) : null}
+              <View className="mb-5 bg-red-50 p-3 rounded-lg border-l-4 border-red-400">
+                <Text className="text-red-500 font-medium">{error}</Text>
+              </View>
+            ) : null}
 
-            {/* Delete - Cancel - Save Button in Modal*/}
-            <View className="flex-row justify-between">
-            <TouchableOpacity
+            {/* Delete - Save Buttons */}
+            <View className="flex-row justify-between mt-6">
+              <TouchableOpacity
                 onPress={() => {
                   Alert.alert(
                     "Delete Meal",
                     "Are you sure you want to delete this meal?",
                     [
                       { text: "Cancel", style: "cancel" },
-                      { text: "Delete", onPress: handleDelete, style: "destructive" }, //Delete Meal
+                      { text: "Delete", onPress: handleDelete, style: "destructive" },
                     ]
                   );
                 }}
-                className="bg-red-500 p-2 rounded-xl w-24"
+                className="bg-red-500 p-3 rounded-xl w-24"
+                disabled={isLoading}
               >
-                <Text className="text-white text-center text-xl font-semibold">
-                    Delete
+                <Text className="text-white text-center font-semibold">
+                  Delete
                 </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 disabled={isLoading}
-                onPress={() => handleModalSaveMeal()} //Update to Firestore
-                className="bg-primary p-2 rounded-xl w-24"
+                onPress={handleModalSaveMeal}
+                className="bg-primary p-3 rounded-xl w-24"
               >
-                { isLoading?
-                (
-                    <ActivityIndicator size="large" color="#fff" />
-                ) : ( 
-                    <Text className="text-white text-center text-xl font-semibold">
-                        Save
-                    </Text>
-                )
-                }
+                {isLoading ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <Text className="text-white text-center font-semibold">
+                    Save
+                  </Text>
+                )}
               </TouchableOpacity>
-
-              
             </View>
 
+            {/* Cancel Button */}
             <TouchableOpacity
-              onPress={closeModal} //Close Modal
-              className="mt-4 bg-gray-300 p-2 rounded-xl w-full"
+              onPress={closeModal}
+              className="mt-4 bg-gray-200 p-3 rounded-xl w-full"
+              disabled={isLoading}
             >
-              <Text className="text-center text-xl font-semibold">
+              <Text className="text-center font-semibold text-gray-700">
                 Cancel
-            </Text>
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
