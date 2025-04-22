@@ -38,7 +38,7 @@ const mealSuggestions = [
     protein: 25,
     carbs: 60,
     fat: 10,
-    image: "https://source.unsplash.com/random/300x200/?smoothie",
+    image: require("../../assets/images/food/2.png"),
     description:
       "This vibrant smoothie bowl combines the power of high-quality protein with antioxidant-rich fruits. The thick, creamy base is made with Greek yogurt and banana, providing both protein and natural sweetness. Topped with crunchy granola, fresh berries, and nutrient-dense chia seeds, this bowl offers a balanced breakfast that sustains energy levels throughout the morning.",
     ingredients: [
@@ -60,7 +60,7 @@ const mealSuggestions = [
     protein: 38,
     carbs: 22,
     fat: 25,
-    image: "https://source.unsplash.com/random/300x200/?salmon",
+    image: require("../../assets/images/food/3.png"),
     description:
       "This omega-3 rich meal features a perfectly baked salmon fillet with a golden crust and tender, flaky interior. The salmon is complemented by a colorful medley of seasonal vegetables like broccoli, bell peppers, and carrots, roasted until caramelized. A light seasoning of herbs enhances the natural flavors without overpowering the dish, creating a nutrient-dense dinner that supports heart and brain health.",
     ingredients: [
@@ -82,7 +82,7 @@ const mealSuggestions = [
     protein: 18,
     carbs: 58,
     fat: 15,
-    image: "https://source.unsplash.com/random/300x200/?quinoa",
+    image: require("../../assets/images/food/4.png"),
     description:
       "This visually stunning bowl centers around protein-rich quinoa, known as a complete plant protein. Layered with roasted sweet potatoes for complex carbs, vitamin-packed kale, and fiber-rich chickpeas, it delivers a nutritional powerhouse in every bite. The tahini dressing adds a creamy texture and nutty flavor, bringing together all components into a satisfying vegetarian meal that provides sustained energy.",
     ingredients: [
@@ -104,7 +104,7 @@ const mealSuggestions = [
     protein: 20,
     carbs: 35,
     fat: 8,
-    image: "https://source.unsplash.com/random/300x200/?yogurt",
+    image: require("../../assets/images/food/5.png"),
     description:
       "This elegantly layered parfait combines protein-rich Greek yogurt with antioxidant-packed mixed berries and crunchy granola. The creamy yogurt provides a tangy base while delivering gut-healthy probiotics. Natural honey adds just enough sweetness to balance the tartness, and almond flakes contribute heart-healthy fats and a satisfying crunch. Perfect as a quick breakfast or nutritious snack, this parfait offers balanced nutrition in a visually appealing package.",
     ingredients: [
@@ -125,7 +125,7 @@ const mealSuggestions = [
     protein: 28,
     carbs: 38,
     fat: 14,
-    image: "https://source.unsplash.com/random/300x200/?wrap",
+    image: require("../../assets/images/food/6.png"),
     description:
       "This portable, nutrient-dense wrap features lean turkey breast for quality protein, creamy avocado for healthy fats, and a whole grain wrap for complex carbohydrates. Fresh vegetables add essential vitamins, minerals, and satisfying crunch, while hummus provides additional protein and fiber. The combination creates a balanced meal that's quick to prepare yet nutritionally complete, perfect for busy days when you need sustained energy.",
     ingredients: [
@@ -147,7 +147,7 @@ const mealSuggestions = [
     protein: 15,
     carbs: 45,
     fat: 12,
-    image: "https://source.unsplash.com/random/300x200/?stirfry",
+    image: require("../../assets/images/food/7.png"),
     description:
       "This vibrant vegetarian stir fry combines protein-rich tofu with a colorful array of fresh vegetables for maximum nutritional benefit. The tofu, marinated in low-sodium soy sauce, provides a savory flavor and satisfying texture. Fiber-rich brown rice serves as a wholesome base, while the rainbow of vegetables delivers essential vitamins, minerals, and antioxidants. Quick cooking preserves nutrients and natural flavors for a delicious plant-based meal.",
     ingredients: [
@@ -169,7 +169,7 @@ const mealSuggestions = [
     protein: 15,
     carbs: 52,
     fat: 8,
-    image: "https://source.unsplash.com/random/300x200/?oats",
+    image: require("../../assets/images/food/8.png"),
     description:
       "This time-saving breakfast combines rolled oats with protein-rich chia seeds and creamy almond milk, allowing the ingredients to meld overnight into a pudding-like consistency. The complex carbohydrates from oats provide sustained energy release throughout the morning, while chia seeds add omega-3 fatty acids and fiber. Topped with fresh fruits and a touch of almond butter, this make-ahead meal offers balanced nutrition with minimal morning preparation.",
     ingredients: [
@@ -191,7 +191,7 @@ const mealSuggestions = [
     protein: 22,
     carbs: 40,
     fat: 16,
-    image: "https://source.unsplash.com/random/300x200/?stuffedpeppers",
+    image: require("../../assets/images/food/9.png"),
     description:
       "These colorful stuffed peppers feature Mediterranean-inspired ingredients including protein-packed quinoa, vitamin-rich vegetables, and tangy feta cheese. Bell peppers serve as edible vessels while providing vitamin C and antioxidants. The quinoa and vegetable filling offers complete protein and complex carbohydrates, while olive oil and feta add healthy fats and distinctive Mediterranean flavors. This dish combines visual appeal with nutritional excellence for a satisfying vegetarian entree.",
     ingredients: [
@@ -213,7 +213,7 @@ const mealSuggestions = [
     protein: 28,
     carbs: 10,
     fat: 12,
-    image: "https://source.unsplash.com/random/300x200/?tunawrap",
+    image: require("../../assets/images/food/10.png"),
     description:
       "These light yet satisfying wraps use crisp lettuce leaves as a low-carb alternative to traditional wraps. The protein-rich tuna salad features Greek yogurt instead of mayonnaise, reducing fat while adding beneficial probiotics. Fresh celery adds pleasant crunch and fiber, while lemon juice and Dijon mustard provide bright, tangy flavors without excess sodium or calories. Perfect for a light lunch or appetizer, these wraps deliver lean protein and fresh ingredients in a refreshing package.",
     ingredients: [
@@ -235,7 +235,7 @@ const mealSuggestions = [
     protein: 16,
     carbs: 65,
     fat: 10,
-    image: "https://source.unsplash.com/random/300x200/?sweetpotato",
+    image: require("../../assets/images/food/11.png"),
     description:
       "This vibrant plant-based bowl centers around vitamin-rich roasted sweet potatoes and protein-packed black beans. Together they create a complete protein while providing complex carbohydrates and fiber. The creamy avocado adds heart-healthy monounsaturated fats, while fresh cilantro and lime juice bring bright, zesty flavors. A touch of cumin adds earthy warmth and digestive benefits. This colorful, nutrient-dense meal offers sustained energy and exceptional nutritional value in a simple format.",
     ingredients: [
@@ -257,7 +257,7 @@ const mealSuggestions = [
     protein: 24,
     carbs: 18,
     fat: 5,
-    image: "https://source.unsplash.com/random/300x200/?cottagecheese",
+    image: require("../../assets/images/food/12.png"),
     description:
       "This simple yet nutritionally complete snack pairs protein-rich cottage cheese with naturally sweet fresh fruits. The cottage cheese provides high-quality complete protein and calcium for muscle and bone health, while fresh fruits add essential vitamins, fiber, and natural sugars for quick energy. A light drizzle of honey enhances the sweetness, and a sprinkle of cinnamon adds warmth and has been shown to help regulate blood sugar levels. Perfect as a post-workout recovery snack or light breakfast.",
     ingredients: [
@@ -278,7 +278,7 @@ const mealSuggestions = [
     protein: 18,
     carbs: 42,
     fat: 8,
-    image: "https://source.unsplash.com/random/300x200/?lentilsoup",
+    image: require("../../assets/images/food/13.png"),
     description:
       "This hearty, nutrient-dense soup features protein and fiber-rich lentils as its star ingredient. Lentils provide plant-based protein, complex carbohydrates, and essential minerals including iron and potassium. The mirepoix base of carrots, celery, and onion adds flavor depth and additional vitamins, while aromatic herbs enhance the taste profile without adding sodium or calories. This soup simmers to perfection, creating a comforting meal that's as nutritious as it is satisfying on cool days.",
     ingredients: [
@@ -300,7 +300,7 @@ const mealSuggestions = [
     protein: 25,
     carbs: 8,
     fat: 12,
-    image: "https://source.unsplash.com/random/300x200/?omelette",
+    image: require("../../assets/images/food/14.png"),
     description:
       "This protein-packed breakfast features fluffy egg whites for lean protein without the cholesterol of whole eggs. Folded with nutrient-rich spinach for iron and vitamins, juicy tomatoes for lycopene, and a touch of tangy feta cheese for calcium and flavor. The light cooking technique maintains the delicate texture while olive oil adds heart-healthy fats. This omelette provides exceptional protein quality with minimal calories, making it ideal for those focused on lean muscle maintenance or weight management goals.",
     ingredients: [
@@ -321,7 +321,7 @@ const mealSuggestions = [
     protein: 40,
     carbs: 20,
     fat: 18,
-    image: "https://source.unsplash.com/random/300x200/?tunasteak",
+    image: require("../../assets/images/food/15.png"),
     description:
       "This restaurant-quality dish features premium tuna steak, rich in omega-3 fatty acids and high-quality lean protein. The brief searing technique creates a flavorful crust while maintaining a tender, rare center, preserving both texture and nutrients. Served with quinoa for complex carbohydrates and steamed asparagus for added vitamins and fiber. The light seasoning of sesame seeds and citrus enhances the natural flavors of the tuna while adding antioxidants and a touch of calcium from the seeds.",
     ingredients: [
@@ -343,7 +343,7 @@ const mealSuggestions = [
     protein: 20,
     carbs: 48,
     fat: 10,
-    image: "https://source.unsplash.com/random/300x200/?pancakes",
+    image: require("../../assets/images/food/16.png"),
     description:
       "These fluffy yet protein-rich pancakes transform a traditionally carb-heavy breakfast into a balanced meal that supports muscle recovery and sustained energy. The batter combines protein powder with oat flour for a nutritional boost over regular flour, while egg whites create lightness without added fat. Bursting with antioxidant-rich blueberries that add natural sweetness and nutrients, these pancakes deliver a perfect balance of macronutrients with the comfort-food satisfaction of a classic breakfast favorite.",
     ingredients: [
@@ -365,7 +365,7 @@ const mealSuggestions = [
     protein: 26,
     carbs: 25,
     fat: 8,
-    image: "https://source.unsplash.com/random/300x200/?chickensoup",
+    image: require("../../assets/images/food/17.png"),
     description:
       "This comforting classic combines lean protein from chicken breast with a rainbow of nutrient-rich vegetables in a flavorful, clear broth. Each spoonful delivers essential vitamins, minerals, and antioxidants while the protein and fiber content create lasting satiety. The gentle simmering process allows flavors to meld while maintaining the nutritional integrity of the ingredients. Perfect for recovery when feeling under the weather or as a light yet satisfying meal that hydrates while nourishing the body.",
     ingredients: [
@@ -387,7 +387,7 @@ const mealSuggestions = [
     protein: 10,
     carbs: 30,
     fat: 12,
-    image: "https://source.unsplash.com/random/300x200/?chiapudding",
+    image: require("../../assets/images/food/18.png"),
     description:
       "This no-cook overnight pudding harnesses the remarkable properties of chia seeds, which expand to create a tapioca-like texture when soaked in liquid. Packed with omega-3 fatty acids, fiber, and protein, chia seeds support heart health and digestion while providing lasting energy. The creamy coconut milk base adds healthy fats and tropical flavor, while fresh mango contributes natural sweetness, vitamins, and vibrant color. This simple yet nutritionally complex breakfast or snack requires minimal preparation for maximum health benefits.",
     ingredients: [
@@ -408,7 +408,8 @@ const mealSuggestions = [
     protein: 35,
     carbs: 18,
     fat: 10,
-    image: "https://source.unsplash.com/random/300x200/?bakedfish",
+    image: require("../../assets/images/food/19.png"),
+
     description:
       "This elegant yet simple dish features delicate cod fillet, a lean source of high-quality protein rich in B vitamins and minerals. The fish is baked with bright, seasonal vegetables that provide fiber, antioxidants, and visual appeal. A touch of heart-healthy olive oil and aromatic herbs enhances flavors while keeping calories in check. The gentle baking method preserves the tender texture of the fish while allowing the natural flavors of all ingredients to shine through for a light yet satisfying dinner option.",
     ingredients: [
@@ -430,7 +431,7 @@ const mealSuggestions = [
     protein: 12,
     carbs: 38,
     fat: 14,
-    image: "https://source.unsplash.com/random/300x200/?hummus",
+    image: require("../../assets/images/food/20.png"),
     description:
       "This vibrant plant-based snack plate centers around creamy hummus, a nutrient-dense spread made from chickpeas that provides protein, fiber, and healthy fats. Surrounded by a rainbow of fresh, crisp vegetables offering various vitamins, minerals, and antioxidants, this plate delivers satisfying crunch and flavor variety. The whole grain crackers add complex carbohydrates for sustained energy. Perfect as a shareable appetizer or light meal, this Mediterranean-inspired dish proves healthy eating can be both visually appealing and delicious.",
     ingredients: [
