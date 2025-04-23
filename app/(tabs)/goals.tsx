@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Dimensions, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
 import { ListItem } from 'react-native-elements';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
 import { db, auth } from '@/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 
@@ -11,9 +11,32 @@ const goals = () => {
   const [dayData, setDayData] = useState({ breakfast: 0, lunch: 0, dinner: 0 });
   const [weekData, setWeekData] = useState<number[]>([]);
   const [weekHistoryData, setWeekHistoryData] = useState<any[]>([]);
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [dailyCalorieGoal, setDailyCalorieGoal] = useState(2500);
   const [loading, setLoading] = useState(true);
+
+  // ฟังก์ชันคำนวณวันในสัปดาห์
+  const getCurrentWeekDates = () => {
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    const startDate = new Date(today);
+    
+    // หาวันจันทร์ของสัปดาห์นี้
+    startDate.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+    
+    // สร้าง array ของวันที่ทั้งสัปดาห์
+    return Array.from({ length: 7 }).map((_, i) => {
+      const date = new Date(startDate);
+      date.setDate(startDate.getDate() + i);
+      return {
+        dateString: date.toISOString().split('T')[0],
+        dayName: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i],
+        fullDayName: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][i],
+        dateObject: date
+      };
+    });
+  };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, user => {
@@ -29,8 +52,11 @@ const goals = () => {
       try {
         setLoading(true);
         
-        // ดึงข้อมูลจาก collection "meals" โดยตรง (ตามโครงสร้าง Firebase ที่ให้มา)
-        const q = collection(db, 'users', userId, 'meals');
+        const q = query(
+          collection(db, 'users', userId, 'meals'),
+          orderBy('date', 'desc')
+        );
+        
         const snapshot = await getDocs(q);
         const allMeals = snapshot.docs.map(doc => ({
           id: doc.id,
@@ -60,25 +86,31 @@ const goals = () => {
         setDayData({ breakfast, lunch, dinner });
 
         // ประมวลผลข้อมูลประจำสัปดาห์
-        const todayDate = new Date();
-        const weekDates = [...Array(7)].map((_, i) => {
-          const d = new Date(todayDate);
-          d.setDate(d.getDate() - i);
-          return d.toISOString().split('T')[0];
-        });
-
-        const dailyTotals = weekDates.reverse().map(date => {
-          const dailyMeals = allMeals.filter(m => m.date === date);
+        const weekDates = getCurrentWeekDates();
+        
+        const dailyTotals = weekDates.map(day => {
+          const dailyMeals = allMeals.filter(m => m.date === day.dateString);
           return dailyMeals.reduce((sum, m) => sum + (m.calories || 0), 0);
         });
 
         setWeekData(dailyTotals);
-        setWeekHistoryData(
-          weekDates.map(date => ({
-            date,
-            meals: allMeals.filter(m => m.date === date)
-          }))
-        );
+        
+        // เก็บข้อมูลสำหรับแสดงประวัติ
+        const weekHistory = weekDates.map(day => ({
+          date: day.dateString,
+          dayName: day.dayName,
+          fullDayName: day.fullDayName,
+          dateObject: day.dateObject,
+          totalCalories: allMeals
+            .filter(m => m.date === day.dateString)
+            .reduce((sum, m) => sum + (m.calories || 0), 0),
+          meals: allMeals.filter(m => m.date === day.dateString)
+        }));
+
+        setWeekHistoryData(weekHistory);
+        
+        // เลือกวันปัจจุบันโดยอัตโนมัติ
+        setSelectedDay(today);
 
       } catch (error) {
         console.error("Error fetching meals:", error);
@@ -96,11 +128,13 @@ const goals = () => {
         datasets: [{ data: [dayData.breakfast, dayData.lunch, dayData.dinner] }],
       }
     : {
-        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        labels: weekHistoryData.map(day => day.dayName),
         datasets: [{ data: weekData }],
       };
 
   const totalDayCalories = dayData.breakfast + dayData.lunch + dayData.dinner;
+
+  const selectedDayData = weekHistoryData.find(day => day.date === selectedDay);
 
   if (loading) {
     return (
@@ -163,9 +197,9 @@ const goals = () => {
         />
 
         <ScrollView style={{ width: '100%' }}>
-          <Text style={styles.sectionHeader}>History Meals</Text>
           {activeView === 'day' ? (
             <>
+              <Text style={styles.sectionHeader}>Today's Meals</Text>
               <ListItem bottomDivider>
                 <ListItem.Content>
                   <ListItem.Title>Breakfast</ListItem.Title>
@@ -186,19 +220,57 @@ const goals = () => {
               </ListItem>
             </>
           ) : (
-            weekHistoryData.map((day, index) => (
-              <View key={index}>
-                <Text style={styles.sectionHeader}>{day.date}</Text>
-                {day.meals.map((meal: any, i: number) => (
-                  <ListItem key={i} bottomDivider>
-                    <ListItem.Content>
-                      <ListItem.Title>{meal.mealType} - {meal.name}</ListItem.Title>
-                      <ListItem.Subtitle>{meal.calories} cal</ListItem.Subtitle>
-                    </ListItem.Content>
-                  </ListItem>
+            <>
+              <Text style={styles.sectionHeader}>Select a Day</Text>
+              <View style={styles.daySelectorContainer}>
+                {weekHistoryData.map((day) => (
+                  <TouchableOpacity
+                    key={day.date}
+                    style={[
+                      styles.dayButton,
+                      selectedDay === day.date && styles.selectedDayButton
+                    ]}
+                    onPress={() => setSelectedDay(day.date)}
+                  >
+                    <Text style={[
+                      styles.dayButtonText,
+                      selectedDay === day.date && styles.selectedDayButtonText
+                    ]}>
+                      {day.dayName}
+                    </Text>
+                    <Text style={styles.dayButtonDate}>
+                      {day.dateObject.getDate()}
+                    </Text>
+                  </TouchableOpacity>
                 ))}
               </View>
-            ))
+
+              {selectedDayData && (
+                <>
+                  <Text style={styles.sectionHeader}>
+                    {selectedDayData.fullDayName} - {selectedDayData.date}
+                  </Text>
+                  <Text style={styles.totalCaloriesText}>
+                    Total: {selectedDayData.totalCalories} cal
+                  </Text>
+                  
+                  {selectedDayData.meals.length > 0 ? (
+                    selectedDayData.meals.map((meal: any, i: number) => (
+                      <ListItem key={i} bottomDivider>
+                        <ListItem.Content>
+                          <ListItem.Title>
+                            {meal.mealType.charAt(0).toUpperCase() + meal.mealType.slice(1)} - {meal.name}
+                          </ListItem.Title>
+                          <ListItem.Subtitle>{meal.calories} cal</ListItem.Subtitle>
+                        </ListItem.Content>
+                      </ListItem>
+                    ))
+                  ) : (
+                    <Text style={styles.noMealsText}>No meals recorded for this day</Text>
+                  )}
+                </>
+              )}
+            </>
           )}
         </ScrollView>
       </View>
@@ -219,7 +291,56 @@ const styles = StyleSheet.create({
   },
   title: { color: '#57B4BA', fontSize: 24, fontWeight: 'bold', marginBottom: 10 },
   subTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 20 },
-  sectionHeader: { fontSize: 20, fontWeight: 'bold', marginTop: 10 },
+  sectionHeader: { 
+    fontSize: 20, 
+    fontWeight: 'bold', 
+    marginTop: 10, 
+    marginBottom: 15,
+    color: '#57B4BA'
+  },
+  daySelectorContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  dayButton: {
+    width: 40,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+    backgroundColor: '#f0f0f0',
+    marginHorizontal: 2,
+  },
+  selectedDayButton: {
+    backgroundColor: '#57B4BA',
+  },
+  dayButtonText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  selectedDayButtonText: {
+    color: '#FFF',
+  },
+  dayButtonDate: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginTop: 5,
+  },
+  totalCaloriesText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#57B4BA',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  noMealsText: {
+    textAlign: 'center',
+    marginTop: 20,
+    color: '#666',
+    fontSize: 16,
+  },
 });
 
 export default goals;
