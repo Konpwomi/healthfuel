@@ -6,7 +6,7 @@ import { useAuth } from './authContext';
 export interface ProfileData {
   name: string;
   age: number;
-  gender: string; // Changed from 'sex' to match your Firestore schema
+  gender: string;
   weight: number;
   height: number;
   profilePicture?: string;

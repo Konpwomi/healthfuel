@@ -1,12 +1,22 @@
 import { useLocalSearchParams, useNavigation } from "expo-router";
-import { View, Text, TextInput,TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, Platform, ScrollView, Pressable } from "react-native";
+import { 
+  View, 
+  Text, 
+  TextInput,
+  TouchableOpacity, 
+  ActivityIndicator, 
+  KeyboardAvoidingView, 
+  TouchableWithoutFeedback, 
+  Keyboard, 
+  Platform, 
+  ScrollView, 
+  Pressable,
+  StatusBar
+} from "react-native";
 import { useLayoutEffect, useState } from "react";
-import { LinearGradient } from "expo-linear-gradient";
 import { addDoc, collection } from "firebase/firestore";
 import { db, auth } from "@/firebaseConfig";
 import { Ionicons } from "@expo/vector-icons";
-
-
 
 export default function AddMeals() {
   const { category } = useLocalSearchParams();
@@ -15,21 +25,24 @@ export default function AddMeals() {
   // Header Style
   useLayoutEffect(() => {
     navigation.setOptions({
-      //title: `${category?.toString().toUpperCase()}`,
       title: "",
       headerShown: true,
       headerStyle: {
-        backgroundColor: "#b6fdff",
-        shadowColor: "transparent",
-        elevation: 0,
+        backgroundColor: "#ffffff",
+        shadowColor: "#f0f0f0",
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 5,
         borderBottomWidth: 0,
       },
       headerLeft: () => (
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          style={{ marginLeft: 10 }}
+          style={{ marginLeft: 16 }}
+          className="p-2 my-4 rounded-full bg-gray-100"
         >
-          <Ionicons name="arrow-back" size={24} color="black" />
+          <Ionicons name="arrow-back" size={22} color="#555" />
         </TouchableOpacity>
       ),
     });
@@ -81,93 +94,130 @@ export default function AddMeals() {
   };
 
   return (
-        <View className="bg-secondary flex-1">
+    <>
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex-1"
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <ScrollView
-            contentContainerStyle={{ flexGrow: 1, padding: 20 }}
+            className="flex-1 bg-white pt-20"
+            contentContainerStyle={{ flexGrow: 1 }}
             keyboardShouldPersistTaps="handled"
           >
-            <View className="flex-1">
-              <Text className="text-3xl ml-10 mr-10 mt-20 mb-5 font-semibold self-center">
-                {category?.toString().charAt(0).toUpperCase() +
-                  category?.toString().slice(1).toLowerCase()}
-              </Text>
+            {/* Top decorative element */}            
+            <View className="flex-1 px-6">
+              {/* Category Header */}
+              <View className="items-center mt-8 mb-10">
+                <Text className="text-3xl font-bold text-gray-800">
+                  Add {category?.toString().charAt(0).toUpperCase() + category?.toString().slice(1).toLowerCase()}
+                </Text>
+                <View className="flex-row items-center mt-2">
+                  <View className="h-1 w-48 bg-primary rounded-full mx-1" />
+                </View>
+              </View>
 
-              <View className="m-10">
+              {/* Main Form */}
+              <View className="bg-white rounded-3xl p-6 pt-10 shadow-md border border-gray-100">
                 {/* Meal Name Input */}
-                <Text className="text-xl font-semibold">Meals</Text>
-                <TextInput
-                  className="text-xl font-semibold rounded-lg bg-gray-50 p-4 mt-5"
-                  keyboardType="default"
-                  value={mealName}
-                  onChangeText={setMealName}
-                />
-
-                {/* Kcal Input */}
-                <Text className="font-semibold text-xl mt-10">Kcal</Text>
-                <View className="flex-row">
-                  <TextInput
-                    className="font-semibold text-xl rounded-lg bg-gray-50 mt-5 w-32 p-4"
-                    keyboardType="numeric"
-                    value={mealCalories?.toString() || ""}
-                    onChangeText={(text) => {
-                      const mealCaloriesNum = parseInt(text);
-                      if (isNaN(mealCaloriesNum)) {
-                        setError("Please enter a valid number for calories.");
-                        setMealCalories(null);
-                      } else {
-                        setMealCalories(mealCaloriesNum);
-                        setError("");
-                      }
-                    }}
-                  />
-                  <Text className="font-semibold text-xl text-primary self-center mt-5 ml-3">
-                    Kcal
+                <View className="mb-8">
+                  <Text className="text-lg font-semibold mb-3 text-gray-700 ml-1">
+                    Meal Name
                   </Text>
+                  <View className="border-b border-gray-200 pb-2">
+                    <TextInput
+                      className="bg-white text-gray-800 px-3 py-3 text-lg"
+                      placeholder="What did you eat?"
+                      placeholderTextColor="#bdbdbd"
+                      value={mealName}
+                      onChangeText={setMealName}
+                    />
+                  </View>
                 </View>
 
-                {/* Error Text */}
-                {error ? (
-                  <Text className="text-red-500 mt-10 font-semibold">
-                    {error}
+                {/* Kcal Input */}
+                <View className="mb-1">
+                  <Text className="text-lg font-semibold mb-3 text-gray-700 ml-1">
+                    Calories
                   </Text>
+                  <View className="flex-row items-center border-b border-gray-200 pb-2">
+                    <TextInput
+                      className="bg-white text-gray-800 px-3 py-3 text-lg flex-1"
+                      keyboardType="numeric"
+                      placeholder="0"
+                      placeholderTextColor="#bdbdbd"
+                      value={mealCalories?.toString() || ""}
+                      onChangeText={(text) => {
+                        const mealCaloriesNum = parseInt(text);
+                        if (text === "") {
+                          setMealCalories(null);
+                          setError("");
+                        } else if (isNaN(mealCaloriesNum)) {
+                          setError("Please enter a valid number for calories.");
+                          setMealCalories(null);
+                        } else {
+                          setMealCalories(mealCaloriesNum);
+                          setError("");
+                        }
+                      }}
+                    />
+                    <Text className="text-primary font-semibold text-lg mr-2">
+                      Kcal
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Error Message */}
+                {error ? (
+                  <View className="mb-6 bg-red-50 p-3 rounded-lg border-l-4 border-red-400">
+                    <Text className="text-red-500 font-medium">
+                      {error}
+                    </Text>
+                  </View>
                 ) : null}
 
-                {/* Buttons */}
+                {/* Action Buttons */}
                 <View className="flex-row justify-between mt-10">
                   <TouchableOpacity
-                    className="bg-white rounded-xl w-40 p-4 items-center justify-center"
+                    className="bg-gray-100 rounded-xl px-6 py-4 flex-1 mr-3"
                     onPress={() => {
                       setMealName("");
                       setMealCalories(null);
                       setError("");
                     }}
                   >
-                    <Text className="text-primary text-center text-xl font-semibold">
+                    <Text className="text-gray-600 text-center font-semibold text-lg">
                       Clear
                     </Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
                     disabled={isLoading}
-                    className="bg-primary rounded-xl w-40 p-4 items-center justify-center"
+                    className="bg-primary rounded-xl px-6 py-4 flex-1 ml-3"
                     onPress={handleAddMeal}
                   >
                     {isLoading ? (
-                      <ActivityIndicator size="large" color="#fff" />
+                      <ActivityIndicator size="small" color="#fff" />
                     ) : (
-                      <Text className="text-white text-center text-xl font-semibold">
+                      <Text className="text-white text-center font-semibold text-lg">
                         Add Meal
                       </Text>
                     )}
                   </TouchableOpacity>
                 </View>
               </View>
+              
+              {/* Tip/Help section */}
+              <View className="mt-8 mb-10 bg-gray-50 p-4 rounded-lg">
+                <Text className="text-gray-500 text-center text-sm">
+                  Track your daily intake by adding all meals and snacks
+                </Text>
+              </View>
             </View>
           </ScrollView>
-        </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </>
   );
 }
-
-
-
-

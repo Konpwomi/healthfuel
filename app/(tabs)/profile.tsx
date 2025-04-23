@@ -18,7 +18,13 @@ import { useAuth } from "../../context/authContext";
 type ProfileField = keyof Omit<ProfileData, "profilePicture">;
 
 const ProfilePage = () => {
-  const { profileData, updateProfileData, isLoading, error, refreshProfileData } = useProfile();
+  const {
+    profileData,
+    updateProfileData,
+    isLoading,
+    error,
+    refreshProfileData,
+  } = useProfile();
   // Initialize with null instead of profileData to prevent the state update warning
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const { logout } = useAuth();
@@ -53,7 +59,7 @@ const ProfilePage = () => {
         <Text className="text-base text-gray-600 text-center mb-6">
           {error || "Unable to load your profile information"}
         </Text>
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={refreshProfileData}
           className="bg-primary px-6 py-3 rounded-xl"
         >
@@ -115,13 +121,15 @@ const ProfilePage = () => {
 
       const updatedProfile = { ...profile, [currentField]: num };
       setProfile(updatedProfile);
-      updateProfileData({ [currentField]: num })
-        .catch(err => Alert.alert("Update Failed", err.message));
+      updateProfileData({ [currentField]: num }).catch((err) =>
+        Alert.alert("Update Failed", err.message)
+      );
     } else {
       const updatedProfile = { ...profile, [currentField]: value };
       setProfile(updatedProfile);
-      updateProfileData({ [currentField]: value })
-        .catch(err => Alert.alert("Update Failed", err.message));
+      updateProfileData({ [currentField]: value }).catch((err) =>
+        Alert.alert("Update Failed", err.message)
+      );
     }
 
     resetModalState();
@@ -156,8 +164,9 @@ const ProfilePage = () => {
     if (!result.canceled && result.assets?.length > 0) {
       const newProfilePicture = result.assets[0].uri;
       setProfile({ ...profile, profilePicture: newProfilePicture });
-      updateProfileData({ profilePicture: newProfilePicture })
-        .catch(err => Alert.alert("Update Failed", err.message));
+      updateProfileData({ profilePicture: newProfilePicture }).catch((err) =>
+        Alert.alert("Update Failed", err.message)
+      );
     }
   };
 
@@ -183,17 +192,19 @@ const ProfilePage = () => {
 
   return (
     <ScrollView className="flex-1 bg-white">
-      <View className="p-6 items-center">
-        <Text className="text-2xl font-bold mt-4 mb-8 text-primary">
-          Profile Details
-        </Text>
+      <View className="p-6">
+        <View className="mb-10 mt-5">
+          <Text className="text-3xl font-bold text-primary">Profile Detail</Text>
+          <View className="h-1.5 w-20 bg-primary rounded-full mt-2" />
+        </View>
         {/* Profile Header */}
         <View className="items-center mb-8">
           {/* Profile Image */}
           <Image
-            source={{ 
-              uri: profile.profilePicture || 
-                  "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png" 
+            source={{
+              uri:
+                profile.profilePicture ||
+                "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png",
             }}
             className="w-32 h-32 rounded-full"
           />
@@ -221,7 +232,11 @@ const ProfilePage = () => {
         <View className="bg-white rounded-lg shadow p-4 w-full max-w-md">
           <ProfileFieldRow label="Name" value={profile.name} field="name" />
           <ProfileFieldRow label="Age" value={profile.age} field="age" />
-          <ProfileFieldRow label="Gender" value={profile.gender} field="gender" />
+          <ProfileFieldRow
+            label="Gender"
+            value={profile.gender}
+            field="gender"
+          />
           <ProfileFieldRow
             label="Weight"
             value={`${profile.weight} kg`}
